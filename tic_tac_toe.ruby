@@ -2,6 +2,8 @@
 
 # This class is used to contain methods and variables for the two players
 class Player
+  attr_reader :symbol, :name
+
   @@num_players = 0
 
   def initialize(name)
@@ -36,12 +38,44 @@ class Board
     end
   end
 
-  def check_win
-    p 'The game is over! Enter Y to play again and N to quit.' if won?
+  def won?(player)
+    return false unless row_win?(player) || col_win?(player) || diag_win?(player)
+
+    puts "The game is over! The winner is #{player.name}"
+    true
   end
 
-  def won?
-    p(self)
+  # This method returns true if there is a win in any row
+  def row_win?(player)
+    symbol = player.symbol
+    i = 0
+    while i <= 6
+      return true if @board_array[i] == symbol && @board_array[i + 1] == symbol && @board_array[i + 2] == symbol
+
+      i += 3
+    end
+    false
+  end
+
+  # This method returns true if there is a win in any column
+  def col_win?(player)
+    symbol = player.symbol
+    i = 0
+    while i <= 3
+      return true if @board_array[i] == symbol && @board_array[i + 3] == symbol && @board_array[i + 6] == symbol
+
+      i += 1
+    end
+    false
+  end
+
+  # This method returns true if there is a diagonal win
+  def diag_win?(player)
+    symbol = player.symbol
+    return true if @board_array[0] == symbol && @board_array[4] == symbol && @board_array[8] == symbol
+    return true if @board_array[2] == symbol && @board_array[4] == symbol && @board_array[6] == symbol
+
+    false
   end
 end
 
@@ -55,11 +89,6 @@ while continue == true
   print 'Player 2, enter your name: '
   player_two_name = gets.chomp
 
-  # TESTING #
-  player_one_name = 'p1'
-  player_two_name = 'p2'
-  ###########
-
   # Intialize initial gamestate
   player1 = Player.new(player_one_name)
   player2 = Player.new(player_two_name)
@@ -67,20 +96,23 @@ while continue == true
   my_board.display_board
   p1_turn = true
 
-  while my_board.won? == false
+  while my_board.won?(player1) == false && my_board.won?(player2) == false
     if p1_turn
-      print 'Player 1 (o), select a position: '
-      position = gets.chomp.to_i
+      print "#{player1.name}, select a position (1-9) to place your symbol(o): "
+      position = gets.chomp.to_i - 1
       player1.play(position, my_board)
       p1_turn = false
     else
-      print 'Player 2 (x), select a position: '
-      position = gets.chomp.to_i
+      print "#{player2.name}, select a position (1-9) to place your symbol(o): "
+      position = gets.chomp.to_i - 1
       player2.play(position, my_board)
       p1_turn = true
     end
   end
-  p 'Game has ended. Enter "Y" to play again and "N" to quit.'
-  response = gets.chomp.upcase
-  continue = (response == 'Y')
+  response = ''
+  while response != 'Y' && response != 'N'
+    print 'Enter Y to play again and N to quit:'
+    response = gets.chomp.upcase
+    continue = (response == 'Y')
+  end
 end
