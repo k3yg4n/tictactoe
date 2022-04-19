@@ -120,8 +120,9 @@ while continue == true
   my_board.display_board
   p1_turn = true
   position_idx = -1
+  num_turns = 0
 
-  while my_board.won?(player1) == false && my_board.won?(player2) == false
+  while my_board.won?(player1) == false && my_board.won?(player2) == false && num_turns < 9
     if p1_turn
       position_idx = get_position(player1) - 1
       player1.play(position_idx, my_board)
@@ -131,10 +132,11 @@ while continue == true
       player2.play(position_idx, my_board)
       p1_turn = true
     end
+    num_turns += 1
   end
   response = ''
   while response != 'Y' && response != 'N'
-    print 'Enter Y to play again and N to quit: '
+    print 'GAMEOVER. Enter Y to play again and N to quit: '
     response = gets.chomp.upcase
     puts "\n"
     continue = (response == 'Y')
